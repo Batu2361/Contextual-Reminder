@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kontext‑Notizen</title>
+  <link rel="stylesheet" href="popup.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body data-popup>
+  <div class="nav">
+    <button id="tab-add" class="active">Neue Notiz</button>
+    <button id="tab-list">Notizen <span id="notes-badge" class="badge" hidden>0</span></button>
+    <button id="tab-settings" class="settings-btn" title="Einstellungen">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ── Neue Notiz ───────────────────────────────── -->
+  <section id="view-add">
+    <p class="section-title">Notiz für diese Seite</p>
+    <label class="field">
+      <span>Titel</span>
+      <input id="note-title" placeholder="z.B. Todo, Idee, Hinweis" />
+    </label>
+    <label class="field">
+      <span>Inhalt</span>
+      <textarea id="note-text" placeholder="Schreibe deine Notiz…"></textarea>
+    </label>
+
+    <div class="row">
+      <fieldset class="seg">
+        <legend>Gültig für</legend>
+        <label><input type="radio" name="match-type" value="exact" checked /> Exakte URL</label>
+        <label><input type="radio" name="match-type" value="domain" /> Ganze Domain</label>
+      </fieldset>
+      <label class="seg field">
+        <span>Farbe</span>
+        <input id="note-color" type="color" value="#f0c929" />
+      </label>
+    </div>
+
+    <button id="save-button" class="primary">Notiz speichern</button>
+    <div id="status-message"></div>
+  </section>
+
+  <!-- ── Alle Notizen ─────────────────────────────── -->
+  <section id="view-list" hidden>
+    <div class="toolbar">
+      <input id="search" placeholder="Notizen suchen…" />
+      <select id="sort">
+        <option value="newest">Neueste</option>
+        <option value="oldest">Älteste</option>
+        <option value="title">A–Z</option>
+      </select>
+    </div>
+    <div class="toolbar-actions">
+      <button id="export-btn" class="btn-sm">↓ Export</button>
+      <label class="btn-sm import">
+        ↑ Import
+        <input id="import-input" type="file" accept="application/json" hidden />
+      </label>
+    </div>
+    <div id="all-notes-container"></div>
+  </section>
+
+  <!-- ── Einstellungen ────────────────────────────── -->
+  <section id="view-settings" hidden>
+    <p class="section-title">Einstellungen</p>
+
+    <div class="settings-group">
+      <p class="settings-label">Synchronisation</p>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Geräteübergreifend sync</div>
+          <div class="toggle-desc">Verwendet chrome.storage.sync</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="sync-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <p class="muted" style="margin-top:6px;">Bei sehr vielen oder großen Notizen kann die Sync-Quote erreicht werden.</p>
+    </div>
+
+    <div id="storage-kind" class="storage-info" hidden>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="storage-kind-text"></span>
+    </div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>
