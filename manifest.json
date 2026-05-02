@@ -1,18 +1,39 @@
 {
   "manifest_version": 3,
   "name": "Contextual Reminder & Quick Note",
-  "version": "2.3",
-  "description": "Schöne, anheftbare Seiten-Notizen mit Suche, Farben, Export/Import und geräteübergreifender (optional) Synchronisation.",
+  "version": "4.1",
+  "description": "Page-aware sticky notes with rich text, tags, element anchoring, and a Spotlight-style command bar.",
   "icons": {
+    "16":  "logo_16.png",
+    "32":  "logo_32.png",
+    "48":  "logo_48.png",
     "128": "logo.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "logo.png"
+    "default_icon": {
+      "16":  "logo_16.png",
+      "32":  "logo_32.png",
+      "48":  "logo_48.png",
+      "128": "logo.png"
+    }
   },
-  "permissions": ["storage", "tabs", "scripting"],
-  "host_permissions": ["<all_urls>"]
+  "permissions": ["storage", "tabs", "scripting", "contextMenus", "activeTab"],
+  "optional_host_permissions": ["<all_urls>"],
+  "commands": {
+    "show-notes": {
+      "suggested_key": { "default": "Alt+Shift+N", "mac": "Alt+Shift+N" },
+      "description": "Show notes for the current page"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["lib/purify.min.js", "styles.css", "content.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

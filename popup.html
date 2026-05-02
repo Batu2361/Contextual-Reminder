@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Kontext‑Notizen</title>
+  <title>Contextual Notes</title>
   <link rel="stylesheet" href="popup.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body data-popup>
+
+  <!-- Navigation -->
   <div class="nav">
-    <button id="tab-add" class="active">Neue Notiz</button>
-    <button id="tab-list">Notizen <span id="notes-badge" class="badge" hidden>0</span></button>
-    <button id="tab-settings" class="settings-btn" title="Einstellungen">
+    <button id="tab-add" class="active">New Note</button>
+    <button id="tab-list">Notes <span id="notes-badge" class="badge" hidden>0</span></button>
+    <div class="nav-spacer"></div>
+    <button id="cmd-trigger" class="cmd-trigger" title="Open command bar (⌘K)">⌘K</button>
+    <button id="tab-settings" class="settings-btn" title="Settings">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -18,71 +21,150 @@
     </button>
   </div>
 
-  <!-- ── Neue Notiz ───────────────────────────────── -->
+  <!-- Command Bar (Spotlight-style) -->
+  <div id="cmd-bar" class="cmd-bar" hidden role="dialog" aria-modal="true">
+    <div id="cmd-backdrop" class="cmd-backdrop"></div>
+    <div class="cmd-panel">
+      <div class="cmd-input-row">
+        <svg class="cmd-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="cmd-input" class="cmd-input" placeholder="Search or enter a command…" autocomplete="off" spellcheck="false" />
+        <kbd class="cmd-esc-key">esc</kbd>
+      </div>
+      <div id="cmd-results" class="cmd-results"></div>
+    </div>
+  </div>
+
+  <!-- New Note -->
   <section id="view-add">
-    <p class="section-title">Notiz für diese Seite</p>
-    <label class="field">
-      <span>Titel</span>
-      <input id="note-title" placeholder="z.B. Todo, Idee, Hinweis" />
-    </label>
-    <label class="field">
-      <span>Inhalt</span>
-      <textarea id="note-text" placeholder="Schreibe deine Notiz…"></textarea>
-    </label>
+    <div class="section-header">
+      <p class="section-title">New Note</p>
+      <div id="context-badge" class="context-badge" hidden>
+        <span id="context-icon"></span>
+        <span id="context-label"></span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <label class="field">
+        <span>Title</span>
+        <input id="note-title" placeholder="Leave blank to use the page title" />
+      </label>
+      <div class="field no-margin">
+        <div class="field-header">
+          <span>Content</span>
+          <button id="capture-btn" class="capture-btn" type="button" title="Insert selected text from the page">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            Selection
+          </button>
+        </div>
+        <div id="rich-toolbar" class="rich-toolbar">
+          <button class="rt-btn" data-cmd="heading"   title="Heading style">Aa</button>
+          <span class="rt-sep"></span>
+          <button class="rt-btn" data-cmd="bold"      title="Bold (⌘B)"><b>B</b></button>
+          <button class="rt-btn" data-cmd="italic"    title="Italic (⌘I)"><i>I</i></button>
+          <button class="rt-btn" data-cmd="underline" title="Underline (⌘U)"><u>U</u></button>
+          <span class="rt-sep"></span>
+          <button class="rt-btn" data-cmd="list"      title="Bullet list">•</button>
+          <button class="rt-btn" data-cmd="checklist" title="To-do item">☐</button>
+        </div>
+        <div id="note-text" class="rich-input" contenteditable="true" data-placeholder="Write your note…"></div>
+        <div class="char-counter"><span id="char-count"></span></div>
+      </div>
+    </div>
 
     <div class="row">
       <fieldset class="seg">
-        <legend>Gültig für</legend>
-        <label><input type="radio" name="match-type" value="exact" checked /> Exakte URL</label>
-        <label><input type="radio" name="match-type" value="domain" /> Ganze Domain</label>
+        <legend>Applies to</legend>
+        <label><input type="radio" name="match-type" value="exact" checked /> This exact URL</label>
+        <label><input type="radio" name="match-type" value="domain" /> Entire domain</label>
       </fieldset>
-      <label class="seg field">
-        <span>Farbe</span>
-        <input id="note-color" type="color" value="#f0c929" />
-      </label>
+      <fieldset class="seg color-presets-wrap">
+        <legend>Color</legend>
+        <div id="color-presets" class="color-presets">
+          <button type="button" class="color-swatch active" data-color="#f0c929" style="--c:#f0c929" title="Yellow"></button>
+          <button type="button" class="color-swatch"        data-color="#FF9F0A" style="--c:#FF9F0A" title="Orange"></button>
+          <button type="button" class="color-swatch"        data-color="#FF3B30" style="--c:#FF3B30" title="Red"></button>
+          <button type="button" class="color-swatch"        data-color="#BF5AF2" style="--c:#BF5AF2" title="Purple"></button>
+          <button type="button" class="color-swatch"        data-color="#5AC8FA" style="--c:#5AC8FA" title="Blue"></button>
+          <button type="button" class="color-swatch"        data-color="#34C759" style="--c:#34C759" title="Green"></button>
+        </div>
+      </fieldset>
     </div>
 
-    <button id="save-button" class="primary">Notiz speichern</button>
+    <div class="action-row">
+      <button id="anchor-create-btn" class="anchor-secondary" type="button" title="Pin note to an element on the page">📍</button>
+      <button id="save-button" class="primary">Save Note</button>
+    </div>
     <div id="status-message"></div>
   </section>
 
-  <!-- ── Alle Notizen ─────────────────────────────── -->
+  <!-- All Notes -->
   <section id="view-list" hidden>
-    <div class="toolbar">
-      <input id="search" placeholder="Notizen suchen…" />
-      <select id="sort">
-        <option value="newest">Neueste</option>
-        <option value="oldest">Älteste</option>
-        <option value="title">A–Z</option>
-      </select>
-    </div>
-    <div class="toolbar-actions">
-      <button id="export-btn" class="btn-sm">↓ Export</button>
-      <label class="btn-sm import">
-        ↑ Import
-        <input id="import-input" type="file" accept="application/json" hidden />
-      </label>
+    <div class="form-card list-toolbar-card">
+      <div class="toolbar">
+        <input id="search" placeholder="Search notes…" />
+        <select id="sort">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="title">A–Z</option>
+        </select>
+      </div>
+      <div class="toolbar-actions">
+        <button id="export-btn"    class="btn-sm" title="Export as JSON">↓ JSON</button>
+        <button id="export-md-btn" class="btn-sm" title="Export as Markdown">↓ MD</button>
+        <label class="btn-sm import">↑ Import
+          <input id="import-input" type="file" accept="application/json" hidden />
+        </label>
+      </div>
+      <div id="tag-filter-row" class="tag-filter-row" hidden>
+        <span class="tag-filter-label">Tags:</span>
+        <div id="tag-filter-chips" class="tag-filter-chips"></div>
+        <button id="tag-filter-clear" class="btn-tag-clear" hidden>✕ Clear</button>
+      </div>
     </div>
     <div id="all-notes-container"></div>
   </section>
 
-  <!-- ── Einstellungen ────────────────────────────── -->
+  <!-- Settings -->
   <section id="view-settings" hidden>
-    <p class="section-title">Einstellungen</p>
+    <p class="section-title">Settings</p>
 
     <div class="settings-group">
-      <p class="settings-label">Synchronisation</p>
+      <p class="settings-label">Auto-Load</p>
       <div class="toggle-row">
         <div>
-          <div class="toggle-label">Geräteübergreifend sync</div>
-          <div class="toggle-desc">Verwendet chrome.storage.sync</div>
+          <div class="toggle-label">Show notes automatically</div>
+          <div class="toggle-desc">Requires access to all pages (&lt;all_urls&gt;)</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="auto-load-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <p class="muted" id="auto-load-hint">
+        When enabled, notes appear on page load without opening the popup.
+        Chrome will ask for permission once.
+      </p>
+    </div>
+
+    <div class="settings-group">
+      <p class="settings-label">Sync</p>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Sync across devices</div>
+          <div class="toggle-desc">Uses chrome.storage.sync</div>
         </div>
         <label class="toggle-switch">
           <input type="checkbox" id="sync-toggle" />
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <p class="muted" style="margin-top:6px;">Bei sehr vielen oder großen Notizen kann die Sync-Quote erreicht werden.</p>
+      <p class="muted">Very large or numerous notes may exceed the sync quota.</p>
     </div>
 
     <div id="storage-kind" class="storage-info" hidden>
@@ -93,6 +175,7 @@
     </div>
   </section>
 
-  <script src="popup.js"></script>
+  <script src="lib/purify.min.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

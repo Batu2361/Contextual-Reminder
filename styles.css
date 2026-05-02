@@ -1,35 +1,454 @@
+/* ═══════════════════════════════════════════════════════════
+   Floating Notes — Apple Notes-inspired widget styles.
+   Injected into host pages as a content script stylesheet.
+   All selectors are namespaced (crqn-*) to avoid collisions.
+   ═══════════════════════════════════════════════════════════ */
+
 .contextual-note-container {
-  backdrop-filter: blur(12px); /* Moderner Glassmorphismus */
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  padding: 0;
+  position: fixed;
+  z-index: 2147483647;
+  width: 340px;
+  min-width: 260px;
+  min-height: 80px;
+
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 18px;
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.13),
+    0 4px 12px rgba(0, 0, 0, 0.07);
+
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  resize: both;
+
+  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+
+  transition:
+    box-shadow  0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform   0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity     0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Header etwas schmaler und edler */
+.contextual-note-container:hover {
+  box-shadow:
+    0 18px 56px rgba(0, 0, 0, 0.18),
+    0 6px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* Collapsed state: only the header is visible. */
+.contextual-note-container.collapsed {
+  height: 46px !important;
+  min-height: 46px !important;
+  resize: none;
+}
+
+/* Visual feedback when a file is dragged over the note. */
+.contextual-note-container.drag-over {
+  border-color: var(--note-color, #007AFF) !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--note-color, #007AFF) 30%, transparent),
+    0 14px 44px rgba(0, 0, 0, 0.18) !important;
+  transform: scale(1.015);
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
 .crqn-header {
-  background: rgba(255, 255, 255, 0.5);
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.025) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  cursor: default;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Dedicated drag handle — avoids conflict with the title input. */
+.crqn-drag-grip {
+  cursor: grab;
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 12px;
+  letter-spacing: -2px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+}
+.crqn-drag-grip:hover  { color: rgba(0, 0, 0, 0.55); background: rgba(0, 0, 0, 0.06); }
+.crqn-drag-grip:active { cursor: grabbing; }
+
+.crqn-color {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.1);
 }
 
 .crqn-title {
-  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+  border: none !important;
+  background: transparent !important;
+  outline: none;
+  font: 600 13px/1.2 inherit !important;
   letter-spacing: -0.01em;
-  color: #1a1a1a;
+  color: #1d1d1f !important;
+  cursor: text;
 }
 
+.crqn-actions { display: flex; gap: 2px; flex-shrink: 0; }
+
+.crqn-icon-btn {
+  width: 24px !important; height: 24px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 6px;
+  cursor: pointer;
+  font: 11px/1 inherit !important;
+  color: #86868b !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.14s cubic-bezier(0.4, 0, 0.2, 1),
+    color      0.14s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.crqn-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #1d1d1f !important;
+}
+.crqn-icon-btn[title="Close"]:hover {
+  background: rgba(255, 59, 48, 0.12) !important;
+  color: #FF3B30 !important;
+}
+
+/* ── Formatting toolbar ──────────────────────────────────────── */
+.crqn-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.018) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.crqn-tb-btn {
+  min-width: 28px !important;
+  height: 26px !important;
+  padding: 0 6px !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 6px;
+  cursor: pointer;
+  font: 500 13px/1 -apple-system, "SF Pro Text", system-ui, sans-serif !important;
+  color: #636366 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.14s cubic-bezier(0.4, 0, 0.2, 1),
+    color      0.14s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.crqn-tb-btn b, .crqn-tb-btn i, .crqn-tb-btn u { font-size: 13px; }
+.crqn-tb-btn:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #1d1d1f !important;
+}
+.crqn-tb-btn:active { transform: scale(0.94); }
+
+/* Active format state (e.g. bold is currently on). */
+.crqn-tb-btn.active {
+  background: color-mix(in srgb, var(--note-color, #007AFF) 18%, transparent) !important;
+  color: #1d1d1f !important;
+}
+
+.crqn-tb-sep {
+  width: 1px; height: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ── Editor (contenteditable) ────────────────────────────────── */
 .crqn-editor {
-  padding: 16px;
-  font-size: 14px;
-  line-height: 1.6;
+  flex: 1;
+  border: none !important;
+  outline: none;
+  padding: 12px 14px;
+  font: 13.5px/1.6 inherit !important;
+  color: #3a3a3c !important;
+  background: transparent !important;
+  min-height: 80px;
+  overflow-y: auto;
+  word-wrap: break-word;
+}
+
+/* Placeholder via CSS class — contenteditable has no native placeholder. */
+.crqn-editor.empty::before {
+  content: attr(data-placeholder);
+  color: #aeaeb2;
+  pointer-events: none;
+  display: block;
+}
+
+/* Heading hierarchy similar to Apple Notes. */
+.crqn-editor h1 {
+  font: 800 26px/1.2 inherit !important;
+  margin: 10px 0 6px !important;
+  color: #1d1d1f !important;
+  letter-spacing: -0.03em;
+}
+.crqn-editor h2 {
+  font: 700 21px/1.25 inherit !important;
+  margin: 8px 0 4px !important;
+  color: #1d1d1f !important;
+  letter-spacing: -0.025em;
+}
+.crqn-editor h3 {
+  font: 600 16px/1.3 inherit !important;
+  margin: 6px 0 2px !important;
+  color: #1d1d1f !important;
+  letter-spacing: -0.015em;
+}
+.crqn-editor p { margin: 2px 0; }
+.crqn-editor pre {
+  font: 13px/1.5 "SF Mono", Menlo, Monaco, "Courier New", monospace !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  padding: 8px 10px !important;
+  border-radius: 6px;
+  margin: 4px 0 !important;
+  overflow-x: auto;
+  color: #1d1d1f !important;
+}
+
+/* ── Heading style popover (Aa button) ───────────────────────── */
+.crqn-style-popover {
+  z-index: 2147483647;
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.10);
+  padding: 4px;
+  min-width: 200px;
+  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
+  animation: crqn-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes crqn-pop-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.crqn-style-popover button {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  padding: 9px 14px !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #1d1d1f !important;
+  margin: 0 !important;
+  transition: background 0.14s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.crqn-style-popover button:hover { background: rgba(0, 122, 255, 0.10) !important; }
+.crqn-style-popover .sp-title { font: 800 18px/1.2 inherit !important; }
+.crqn-style-popover .sp-h2    { font: 700 16px/1.2 inherit !important; }
+.crqn-style-popover .sp-h3    { font: 600 14px/1.2 inherit !important; }
+.crqn-style-popover .sp-body  { font: 400 13.5px/1.3 inherit !important; }
+.crqn-style-popover .sp-mono  { font: 500 13px/1.3 "SF Mono", Menlo, Monaco, monospace !important; }
+
+/* ── Anchor picker mode ──────────────────────────────────────── */
+body.crqn-anchor-mode,
+body.crqn-anchor-mode * { cursor: crosshair !important; }
+
+.crqn-anchor-target {
+  outline: 3px solid #007AFF !important;
+  outline-offset: 2px;
+  background: rgba(0, 122, 255, 0.08) !important;
+  cursor: crosshair !important;
+}
+
+.crqn-anchor-hint {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1d1d1f !important;
+  color: #fff !important;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font: 500 13px/1 "SF Pro Text", system-ui, sans-serif !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  z-index: 2147483647;
+  animation: crqn-pop-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+/* Dashed outline on the element the note is anchored to. */
+.crqn-anchored-target {
+  outline: 2px dashed var(--anchor-color, #007AFF) !important;
+  outline-offset: 3px;
+  border-radius: 4px;
+  transition: outline-color 0.2s;
+}
+
+/* Anchor button (📍) active state in the header. */
+.crqn-icon-btn.anchor-btn { font-size: 13px !important; }
+.crqn-icon-btn.anchor-btn.active {
+  background: color-mix(in srgb, var(--note-color, #007AFF) 25%, transparent) !important;
+  color: var(--note-color, #007AFF) !important;
+}
+
+/* Anchored notes scroll with the document. */
+.contextual-note-container.anchored { position: absolute !important; }
+
+/* ── Lists ───────────────────────────────────────────────────── */
+.crqn-editor ul,
+.crqn-editor ol { padding-left: 22px !important; margin: 4px 0 !important; }
+.crqn-editor li { margin: 2px 0; }
+
+/* ── Links ───────────────────────────────────────────────────── */
+.crqn-editor a {
+  color: var(--note-color, #007AFF) !important;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ── Checklist (Apple Notes style) ──────────────────────────── */
+.crqn-editor .task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 3px 0;
+  padding: 1px 0;
+}
+
+.crqn-editor .task-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 4px 0 0 0;
+  width: 16px; height: 16px;
+  border: 1.5px solid #aeaeb2;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
   background: transparent;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.crqn-editor .task-item input[type="checkbox"]:hover { border-color: #636366; }
+.crqn-editor .task-item input[type="checkbox"]:checked {
+  background: var(--note-color, #34C759);
+  border-color: var(--note-color, #34C759);
+}
+.crqn-editor .task-item input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font: 700 11px/1 inherit;
+}
+
+.crqn-editor .task-item .task-text {
+  flex: 1;
+  outline: none;
+  min-height: 20px;
+  word-break: break-word;
+}
+.crqn-editor .task-item.done .task-text {
+  text-decoration: line-through;
+  color: #aeaeb2 !important;
+}
+.crqn-editor .task-item.done { opacity: 0.7; }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.crqn-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.018) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.crqn-save-feedback {
+  font: 500 11px/1 inherit;
+  color: #34C759;
+  letter-spacing: -0.01em;
 }
 
 .crqn-save-btn {
-  background: var(--text-main); /* Dunkler Button für Kontrast */
-  border-radius: 10px;
-  padding: 5px 14px;
+  background: var(--note-color, #1d1d1f) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font: 600 12px/1 inherit !important;
+  cursor: pointer;
+  letter-spacing: -0.01em;
+  transition:
+    filter    0.14s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.1s  cubic-bezier(0.4, 0, 0.2, 1);
+}
+.crqn-save-btn:hover  { filter: brightness(1.1); }
+.crqn-save-btn:active { transform: scale(0.96); }
+
+/* Hide everything except the header when collapsed. */
+.contextual-note-container.collapsed .crqn-toolbar,
+.contextual-note-container.collapsed .crqn-editor,
+.contextual-note-container.collapsed .crqn-footer { display: none; }
+
+/* ── Dark mode ───────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .contextual-note-container {
+    background: rgba(40, 40, 42, 0.85) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+      0 14px 44px rgba(0, 0, 0, 0.5),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  .crqn-header {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+  }
+  .crqn-toolbar {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+  .crqn-tb-btn  { color: #aeaeb2 !important; }
+  .crqn-tb-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #f5f5f7 !important;
+  }
+  .crqn-tb-sep  { background: rgba(255, 255, 255, 0.08); }
+  .crqn-title   { color: #f5f5f7 !important; }
+  .crqn-editor  { color: #d1d1d6 !important; }
+  .crqn-editor.empty::before { color: #636366; }
+  .crqn-editor h1, .crqn-editor h2, .crqn-editor h3 { color: #f5f5f7 !important; }
+  .crqn-icon-btn { color: #aeaeb2 !important; }
+  .crqn-icon-btn:hover { background: rgba(255, 255, 255, 0.08) !important; color: #fff !important; }
+  .crqn-editor .task-item input[type="checkbox"] { border-color: #636366; }
+  .crqn-editor .task-item input[type="checkbox"]:hover { border-color: #aeaeb2; }
+  .crqn-editor .task-item.done .task-text { color: #636366 !important; }
+  .crqn-footer {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border-top-color: rgba(255, 255, 255, 0.05);
+  }
 }
