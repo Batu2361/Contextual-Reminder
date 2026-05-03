@@ -7,6 +7,14 @@ A Chrome extension that lets you attach sticky notes directly to URLs or entire 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
+## 📺 Demo
+
+
+https://github.com/user-attachments/assets/c7ac6cb3-157f-4e99-b0c7-da5eb011ca25
+
+
+
+
 
 ## Features
 
