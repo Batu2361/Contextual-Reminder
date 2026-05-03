@@ -14,7 +14,6 @@ A Chrome extension that lets you attach sticky notes directly to URLs or entire 
 - **Page-aware notes** — attach notes to an exact URL or an entire domain
 - **Floating widgets** — draggable, resizable, collapsible note cards injected into the page
 - **Rich text editor** — headings, bold/italic/underline, bullet lists, to-do checklists, inline links, and code blocks
-- **Markdown shortcuts** — type `# ` for a heading, `- ` for a list, `[] ` for a task directly in the editor
 - **Image support** — drag & drop images into any note (stored as Base64, max 2 MB)
 - **#Tag system** — add `#tags` anywhere in a note, then filter the list by tag
 - **Element anchoring** — pin a note to a specific DOM element on the page (📍); the note repositions itself next to the element even after the page reflows
