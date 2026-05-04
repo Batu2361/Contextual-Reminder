@@ -50,7 +50,10 @@ https://github.com/user-attachments/assets/48162cf6-b5fb-4662-a764-2e99418d671f
 
 ## Screenshots
 
-> Notes appear as floating panels on any page, styled to stay out of the way until you need them.
+<img width="380" height="590" alt="Bildschirmfoto 2026-05-04 um 14 44 09" src="https://github.com/user-attachments/assets/1cf556b0-b991-4137-9e7b-3b3f0d6ebde2" />
+<img width="382" height="474" alt="Bildschirmfoto 2026-05-04 um 14 44 49" src="https://github.com/user-attachments/assets/2a9638f3-1c23-404c-a9cc-82c345ebb065" />
+<img width="382" height="420" alt="Bildschirmfoto 2026-05-04 um 14 44 40" src="https://github.com/user-attachments/assets/91d440ff-8e87-4955-b52b-d12f59675c83" />
+
 
 | New Note | Note List | On-page Widget |
 |----------|-----------|----------------|
@@ -72,9 +75,9 @@ https://github.com/user-attachments/assets/48162cf6-b5fb-4662-a764-2e99418d671f
 
 3. Enable **Developer mode** (top-right toggle)
 
-4. Click **Load unpacked** and select the project folder
+5. Click **Load unpacked** and select the project folder
 
-5. The extension icon appears in the toolbar — click it to open the popup
+6. The extension icon appears in the toolbar — click it to open the popup
 
 ---
 
