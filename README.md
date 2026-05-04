@@ -50,9 +50,14 @@ https://github.com/user-attachments/assets/48162cf6-b5fb-4662-a764-2e99418d671f
 
 ## Screenshots
 
-<img src="https://github.com/user-attachments/assets/1cf556b0-b991-4137-9e7b-3b3f0d6ebde2" width="32%" />
-<img src="https://github.com/user-attachments/assets/2a9638f3-1c23-404c-a9cc-82c345ebb065" width="32%" />
-<img src="https://github.com/user-attachments/assets/91d440ff-8e87-4955-b52b-d12f59675c83" width="32%" />
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/1cf556b0-b991-4137-9e7b-3b3f0d6ebde2" width="200" /></td>
+    <td><img src="https://github.com/user-attachments/assets/2a9638f3-1c23-404c-a9cc-82c345ebb065" width="200" /></td>
+    <td><img src="https://github.com/user-attachments/assets/91d440ff-8e87-4955-b52b-d12f59675c83" width="200" /></td>
+    <td><img src="https://github.com/user-attachments/assets/95907291-0544-4bff-9b85-01f70d05283d" width="200" /></td>
+  </tr>
+</table>
 
 | New Note | Note List | On-page Widget |
 |----------|-----------|----------------|
